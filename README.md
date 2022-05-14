@@ -12,9 +12,7 @@ livechat-liff/
 ├── php/
 │   └── handler.php           ｜ 後端資料主要處理檔案
 │
-├── index.php                 ｜ 
+├── index.php                 ｜ 主頁檔案
 │
-└── liffPage.php              ｜ 
+└── liffPage.php              ｜ LIFF 頁面檔案
 ```
-
-## MySQL
