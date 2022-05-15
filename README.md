@@ -2,7 +2,7 @@
 利用 Firebase 和 MySQL 兩種方法完成即時聊天的效果。
 ## Firebase
 主要由 JavaScript 編寫，利用其中 Firestore 提供的寫入資料、讀取資料、監聽實時資料的 function 以達成即時聊天的目的。
-### 網頁結構
+### 專案結構
 ```
 livechat-liff/
 │
