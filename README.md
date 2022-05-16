@@ -1,7 +1,7 @@
 # livechat-liff
 English | [繁體中文](docs/README_zh-tw.md)
 ## About The Project
-This project is an online chat room website that can be an alternative to LINE original chat room when it can't provide one-to-one chat during your LINE@ account is in bot mode.
+This is an online chat room website that can be an alternative to LINE original chat room when it can't provide one-to-one chat during your LINE@ account is in bot mode.
 ### Built With
 * Firebase JS SDK
 * LIFF API
