@@ -1,79 +1,135 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset='utf-8'>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>即時聊天 - WEB</title>
-
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
-
-    <!-- TODO: Add SDKs for Firebase products that you want to use
-            https://firebase.google.com/docs/web/setup#available-libraries -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
-
-    <!-- JQuery CDN -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <!-- LiveChat -->
-    <script src="js/livechat.js"></script>
-
-    <!-- BootStrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-
-    <!-- Font Awesome -->
-    <script src="https://kit.fontawesome.com/b3258fe523.js" crossorigin="anonymous"></script>
-</head>
-
-<body onload="listenChange()" class="bg-dark">
-    <input type="hidden" id="liffId" value="<?php echo $_GET['id']; ?>">
-    <input type="hidden" id="liffName" value="測試用戶">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <img src="images/livechat.png" alt="" width="30" height="30" class="d-inline-block align-top">
-                <strong>LiveChat</strong>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">首頁</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">註冊會員</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">登入帳號</a>
-                    </li>
-                </ul>
+    <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1, user-scalable=no">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/2.3.3/tocas.css">
+        <title>LiveChat</title>
+        <style>
+        #result {
+            height:400px;
+            width:100%;
+            overflow:scroll;
+        }
+        </style>
+    </head>
+    <body>
+        <div id="loader" class="ts active dimmer" style="z-index:9999;">
+            <div class="ts text loader">讀取中</div>
+        </div>
+        
+        <div class="ts container">
+            <h1>LiveChat</h1>
+            <hr>
+        </div>
+        
+        <div class="ts container">
+            <div class="ts speeches">
+                <div id="result">
+                <?php
+                require "config.php";
+                if ($_GET['userid'] != null) {
+                    $userid = $_GET['userid'];
+                    $mysql = mysqli_connect($mysql_hostname, $mysql_username, $mysql_password, $mysql_database);
+                    $mysql->query("SET NAMES utf8");
+                    $data = $mysql->query("SELECT * FROM messages WHERE userid = '$userid'");
+                    for ($i=1; $i<=mysqli_num_rows($data); $i++) {
+                        $datas = mysqli_fetch_row($data);
+                        if ($datas[2] == "user") {
+                            echo '<div class="right pointing positive speech"><div class="content">' . $datas[1] . '</div></div>';
+                        }
+                        else {
+                            echo '<div class="left pointing speech"><div class="author">Admin</div><div class="avatar"><img src="user.png"></div><div class="content">' . $datas[1] . '</div></div>';
+                        }
+                    }
+                    //$mysql->close();
+                    echo '<script>document.getElementById("loader").setAttribute("class", "ts disabled loader");</script>';
+                }
+                ?>
+                </div>
             </div>
         </div>
-    </nav>
-    <div class="container sm text-light mt-2">
-        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item text-light">您的名稱</li>
-                <li class="breadcrumb-item text-light" aria-current="page">測試用戶</li>
-            </ol>
-        </nav>
-        <div id="chat-space" class="container fluid text-light d-flex flex-column justify-content-center align-items-center" style="position: relative; overflow-x: hidden; overflow-y: scroll; width: auto; height: 490px;">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+        
+        <div class="ts container">
+            <hr>
+            <form id="demo">
+                <div class="ts fluid action input">
+                    <input type="hidden" name="userid" id="userid" value="<?php echo $userid;?>">
+                    <input id="msg" type="text" placeholder="你要說甚麼？" onchange="check()">
+                    <button class="ts disabled button" type="button" id="submitExample">發送</button>
+                </div>
+            </form>
         </div>
-        <div class="input-group mb-3 mt-3">
-            <input id="message" type="text" class="form-control" placeholder="要傳送的訊息">
-            <button onclick="sendMessage()" id="messageButton" class="btn btn-secondary" type="button"><i class="fas fa-paper-plane"></i> 發送</button>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type="text/javascript">
+        function check() {
+            if (document.getElementById("msg").value.split(' ').join('').length < 1) {
+                document.getElementById("submitExample").setAttribute("class", "ts disabled button");
+            }
+            else {
+                document.getElementById("submitExample").setAttribute("class", "ts button");
+            }
+        }
+        
+        $(document).ready(function() {
+            $("#result").scrollTop( $(document).height()+100 );
+            
+            $("#submitExample").click(function() {
+                $.ajax({
+                    type: "POST",
+                    url: "service.php",
+                    dataType: "json",
+                    data: {
+                        msg: $("#msg").val(),
+                        userid: $("#userid").val(),
+                        type: "user"
+                    },
+                    success: function(data) {
+                        if (data) {
+                            $("#demo")[0].reset();
+                            document.getElementById("submitExample").setAttribute("class", "ts disabled button");
+                            $("#result").html('');
+                            for(var i = 0; i < data.length; i++) {
+                                if (data[i][2] == "user") {
+                                    $("#result").html($("#result").html() + '<div class="right pointing positive speech"><div class="content">' + data[i][1] + '</div></div>');
+                                }
+                                else {
+                                    $("#result").html($("#result").html() + '<div class="left pointing speech"><div class="author">Admin</div><div class="avatar"><img src="user.png"></div><div class="content">' + data[i][1] + '</div></div>');
+                                }
+                            }
+                            $("#result").scrollTop( $(document).height()+100 );
+                        }
+                    }
+                })
+            })
+        });
+        
+        setInterval(function(){
+            $.ajax({
+                type: "POST",
+                url: "refresh.php",
+                dataType: "json",
+                data: {
+                    userid: $("#userid").val()
+                },
+                success: function(data) {
+                    if (data) {
+                        $("#result").html('');
+                        for(var i = 0; i < data.length; i++) {
+                            if (data[i][2] == "user") {
+                                $("#result").html($("#result").html() + '<div class="right pointing positive speech"><div class="content">' + data[i][1] + '</div></div>');
+                            }
+                            else {
+                                $("#result").html($("#result").html() + '<div class="left pointing speech"><div class="author">Admin</div><div class="avatar"><img src="user.png"></div><div class="content">' + data[i][1] + '</div></div>');
+                            }
+                        }
+                        //$("#result").scrollTop( $(document).height()+100 );
+                    }
+                }
+            })
+        }, 100);
+        </script>
         </div>
-    </div>
-
-    <!-- BootStrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
-</body>
-
+    </body>
 </html>
